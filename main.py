@@ -18,6 +18,7 @@ import requests
 # Get the website
 website = "https://subslikescript.com/movie/Saving_Private_Ryan-120815"
 result = requests.get(website)
+
 # Get the text
 content = result.text
 # Content is a BeautifulSoup object after parsing
@@ -28,7 +29,39 @@ box = soup.find("article", class_="main-article")
 title = box.find("h1").get_text()
 
 transcript = soup.find("div", class_="full-script").get_text(strip=True, separator="\n")
+# print(title)
+# print(transcript)
 
-print(title)
+# saving script in txt file with title as the file name
+# with open(f"{title}.txt", "w") as file:
+#     file.write(transcript)
 
-print(transcript)
+"""
+Scraping multile pages with BeautifulSoup
+"""
+root = "https://subslikescript.com"
+full_website = f"{root}/movies"
+result_two = requests.get(full_website)
+content = result_two.text
+soup_two = BeautifulSoup(content, "lxml")
+# Selecting the article holding all of the movie links
+movie_page = soup_two.find("article", class_="main-article")
+# find_all returns a list of all the links
+links = []
+for link in movie_page.find_all("a", href=True):
+    links.append(link["href"])
+
+
+for link in links:
+    full_website = f"{root}/{link}"
+    result_two = requests.get(full_website)
+    content = result_two.text
+    soup_two = BeautifulSoup(content, "lxml")
+
+    movie_page = soup_two.find("article", class_="main-article")
+
+    title_two = soup_two.find("h1").get_text()
+    transcript_two = soup_two.find("div", class_="full-script").get_text(strip=True, separator="\n")
+
+    with open(f"{title_two}.txt", "w") as file:
+            file.write(transcript_two)
